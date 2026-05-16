@@ -8,7 +8,9 @@ Zentorybot — backend-платформа формата **AI operating system**
 
 ## Текущий статус MVP
 
-Статус: **MVP scaffold / mock-only / safe mode**.
+Статус: **MVP demo ready / mock-only / safe mode**.
+
+> ⚠️ Реальные API не подключены. Любые интеграции WB/Ozon/Яндекс Маркет/Telegram возвращают mock-ответы со статусами вроде `mock: true` и `not_sent`. Проект можно показывать как MVP demo UX/архитектуры, но нельзя использовать для реальных write-действий.
 
 Готово:
 
@@ -42,7 +44,7 @@ Telegram -> API Layer -> Orchestrator -> Agents -> Decision Engine -> Actions
 - **Orchestrator** — выбирает агента или AI-role workflow.
 - **Agents** — доменные модули менеджера маркетплейсов.
 - **Decision Engine** — риск, approval mode и политики безопасности.
-- **Actions** — proposed actions, approval, reject, mock execute.
+- **Actions** — proposed actions, approval, reject, mock execute через Action Registry / Action Center.
 - **Integrations** — mock adapters WB/Ozon/Яндекс Маркет/Telegram.
 
 ## 11 функций менеджера, превращенных в агентов
@@ -150,15 +152,17 @@ prompts                      # prompt-шаблоны для будущих LLM-�
 tests                        # unit и integration тесты
 ```
 
-## Безопасный режим
+## Mock mode и Safety Core
 
 - Секреты не хранятся в коде и описаны только как имена переменных в `.env.example`.
 - Все внешние интеграции возвращают mock-данные.
 - Реальных API-вызовов WB/Ozon/Яндекс Маркет/Telegram/OpenAI нет.
-- Все write-like действия проходят через proposed actions.
+- Все write-like действия в demo должны проходить через proposed actions и approval flow.
 - `LOW` -> `NONE`, `MEDIUM` -> `SOFT_APPROVAL`, `HIGH/CRITICAL` -> `HARD_APPROVAL`.
-- Safe mode запрещает автоматическое применение действий.
-- Idempotency защищает от повторного исполнения одного действия.
+- Safety Core оценивает risk level, approval mode, лимиты и пишет audit log для SafetyEngine decisions.
+- Action Center показывает карточки действий: причина, risk, approval mode, evidence, before/after, approve/reject/execute/rollback.
+- Safe mode запрещает реальные внешние изменения; mock execution выставляет `external_api_called: false`.
+- Idempotency реализован в `ActionRegistry`; для `ActionCenter` повторное execution и HIGH/CRITICAL validation остаются must-fix перед real API.
 
 ## Документация
 
@@ -169,5 +173,8 @@ tests                        # unit и integration тесты
 - `docs/sku_intelligence_card.md` — единая карточка анализа товара по SKU.
 - `docs/ai_team_structure.md` — AI-команда и роли.
 - `docs/mvp_status.md` — финальный статус MVP.
+- `docs/mvp_demo_checklist.md` — финальная проверка готовности к MVP demo.
+- `docs/business_logic_audit.md` — аудит бизнес-правил и опасных зон перед real API.
+- `docs/fix_report.md` — что исправлено и что осталось must-fix.
 - `docs/next_steps.md` — следующий план развития.
 - `docs/*_module.md` — документация по доменным модулям.

@@ -47,3 +47,9 @@ The Telegram layer maps commands to business event types only. The Orchestrator 
 - `/status` -> agent and Safety Core status.
 
 This keeps Telegram simple while preserving a modular backend.
+
+## MVP demo verification (2026-05-16)
+
+The command list above matches `TelegramCommandService` and the public mock webhook route `POST /telegram/webhook`. In MVP demo mode the Telegram client does not call Telegram Bot API; it returns mock message payloads with `status: not_sent`.
+
+Do not enable real Telegram sends until webhook secrets, tenant/user mapping, command permissions and approval ownership checks are implemented.

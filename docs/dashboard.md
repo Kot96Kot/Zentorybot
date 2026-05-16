@@ -42,3 +42,7 @@ Open:
 ```text
 http://localhost:8000/dashboard
 ```
+
+## MVP demo verification (2026-05-16)
+
+The dashboard is ready for local MVP demo once dependencies are installed. It is intentionally server-rendered and mock-only. It should be used to demonstrate agent status, alerts, action cards, SKU intelligence and audit visibility, not to operate real marketplace accounts.

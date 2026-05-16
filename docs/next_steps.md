@@ -58,3 +58,17 @@
 - Monitoring.
 - Backup/restore.
 - Marketplace sandbox checks.
+
+## 8. MVP demo gate checklist
+
+Before demo in a normal dependency-complete environment:
+
+1. Run `make install`.
+2. Run `ruff check .`.
+3. Run `pytest`.
+4. Start `make dev`.
+5. Smoke-check `GET /health`, `GET /ready`, `GET /reports/daily`, `POST /telegram/webhook`, `POST /actions/preview`.
+6. Open `/dashboard` and `/dashboard/actions`.
+7. Keep all real APIs disabled and use `.env.example` as names-only reference.
+
+Before real API work, resolve the must-fix list in `docs/business_logic_audit.md` and `docs/mvp_demo_checklist.md`.

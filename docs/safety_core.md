@@ -62,3 +62,16 @@ assert decision.allowed_to_execute is True
 ```
 
 The example evaluates a mock action only. A future real integration must still use the safety decision and audit trail before calling external APIs.
+
+## MVP demo verification (2026-05-16)
+
+Safety Core is sufficient for **mock-only MVP demo** because it demonstrates risk levels, approval modes, limit checks and audit logging without calling external APIs.
+
+Before real APIs are connected, the following gaps must be closed:
+
+- price changes must validate minimum margin, cost price and mandatory expenses;
+- price changes above 15% must require hard approval;
+- content publish and bulk content updates need dedicated safety rules;
+- feedback replies need negative/legal/warranty/return classification and knowledge-base grounding;
+- bulk promo participation needs hard approval rules;
+- Action Center execution must enforce idempotency and HIGH/CRITICAL approval consistency.

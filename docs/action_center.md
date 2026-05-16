@@ -78,3 +78,14 @@ The Action Center is exposed through mock-safe REST endpoints for dashboard and 
 
 The legacy `POST /actions/preview` and `POST /actions/approve` routes remain available for orchestrator proposals stored in `ActionRegistry`.
 
+
+## MVP demo verification (2026-05-16)
+
+Action Center is ready for mock demo flows: create, preview, approve, reject, execute and rollback all stay in memory and record mock audit events.
+
+Known pre-real-API gaps:
+
+- execution is not yet idempotent in Action Center;
+- Action Center trusts caller-provided `risk_level` / `approval_mode` and must enforce HIGH/CRITICAL hard approval itself before real writes;
+- persistence is in memory only;
+- Telegram approval commands currently use the ActionRegistry compatibility path, while richer Action Center HTTP routes are available for dashboard/API demos.

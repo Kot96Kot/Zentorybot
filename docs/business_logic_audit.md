@@ -87,3 +87,10 @@ This audit covers the current mock-only Zentorybot MVP business rules before any
 5. Add bulk promo guard by SKU count / revenue impact / margin impact.
 6. Make Action Center execution idempotent and block any HIGH/CRITICAL action unless `approval_mode=HARD_APPROVAL` and status is approved.
 7. Convert sales-plan ad/conversion recommendations into Action Center proposals with risk, approval mode, evidence and audit trail.
+
+## MVP demo gate update (2026-05-16)
+
+The business-rule tests are suitable as an MVP demo safety gate because they make implemented safeguards and missing safeguards explicit. The 12 strict `xfail` tests are intentional documentation of gaps and must not be interpreted as permission to connect real APIs.
+
+For demo: keep all actions mock-only.
+For production/read-write integrations: convert every strict `xfail` in `tests/unit/test_business_logic_*.py` into a passing test before enabling the corresponding real API capability.
