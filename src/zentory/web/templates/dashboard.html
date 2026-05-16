@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Визуализация работы AI-агентов маркетплейсов. Все данные mock, реальные API не вызываются.</p>
+  </div>
+</section>
+
+<section class="grid cards">
+  <article class="card">
+    <span class="label">Статус системы</span>
+    <strong class="status ok">{{ system_status }}</strong>
+  </article>
+  <article class="card">
+    <span class="label">Режим безопасности</span>
+    <strong>{{ safety_mode }}</strong>
+  </article>
+  <article class="card">
+    <span class="label">Алерты</span>
+    <strong class="status critical">{{ alerts_count }}</strong>
+  </article>
+  <article class="card">
+    <span class="label">Действия на approval</span>
+    <strong class="status warning">{{ approval_count }}</strong>
+  </article>
+</section>
+
+<section class="grid two-columns">
+  <article class="card">
+    <div class="section-head">
+      <h2>Топ SKU с рисками</h2>
+      <a href="/dashboard/alerts">Все алерты</a>
+    </div>
+    <table>
+      <thead><tr><th>SKU</th><th>Риск</th><th>Остаток</th><th>Рекомендация</th></tr></thead>
+      <tbody>
+        {% for sku in skus %}
+        <tr>
+          <td><a href="/dashboard/sku/{{ sku.sku }}">{{ sku.sku }}</a></td>
+          <td><span class="pill {{ sku.risk }}">{{ sku.risk }}</span></td>
+          <td>{{ sku.stock_days }} дн.</td>
+          <td>{{ sku.recommendation }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </article>
+
+  <article class="card">
+    <div class="section-head">
+      <h2>Последние действия агентов</h2>
+      <a href="/dashboard/audit">Audit</a>
+    </div>
+    <ul class="timeline">
+      {% for item in agent_actions %}
+      <li>
+        <span class="time">{{ item.time }}</span>
+        <span class="pill {{ item.status }}">{{ item.agent }}</span>
+        <span>{{ item.event }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+</section>
+
+<section class="card">
+  <div class="section-head">
+    <h2>Состояние агентов</h2>
+    <a href="/dashboard/agents">Открыть</a>
+  </div>
+  <div class="agent-grid">
+    {% for agent in agents %}
+    <div class="agent-card">
+      <span class="pill {{ agent.status }}">{{ agent.status }}</span>
+      <strong>{{ agent.name }}</strong>
+      <span>{{ agent.module }}</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
