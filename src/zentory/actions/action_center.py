@@ -98,6 +98,15 @@ class ActionCenter:
 
     def execute_action(self, action_id: str) -> ActionRecord:
         action = self.repository.get(action_id)
+        if action.status == ActionStatus.EXECUTED:
+            self.audit_service.record_sync(
+                {
+                    "event_type": "action_center_execution_skipped_already_executed",
+                    "action_id": action.action_id,
+                    "mock": True,
+                }
+            )
+            return action
         if action.status == ActionStatus.REJECTED:
             self.audit_service.record_sync(
                 {

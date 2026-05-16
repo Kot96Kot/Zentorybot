@@ -5,9 +5,9 @@ from zentory.core.enums import ActionStatus, ApprovalMode, RiskLevel
 from zentory.services.audit_service import AuditService
 
 
-@pytest.mark.xfail(strict=True, reason="ActionCenter.execute_action is not idempotent yet")
 def test_action_cannot_execute_twice() -> None:
-    center = ActionCenter()
+    audit = AuditService()
+    center = ActionCenter(audit_service=audit)
     action = center.create_action(
         agent_name="AdsAgent",
         action_type="ad_bid_change",
@@ -20,7 +20,12 @@ def test_action_cannot_execute_twice() -> None:
     second = center.execute_action(action.action_id)
 
     assert first.status == ActionStatus.EXECUTED
-    assert second.payload.get("mock_execution_count", 1) == 1
+    assert second.status == ActionStatus.EXECUTED
+    assert second.payload["mock_execution"] is True
+    assert second.payload["mock_execution_count"] == 1
+    event_types = [record["event_type"] for record in audit.list_records()]
+    assert event_types.count("action_center_action_executed") == 1
+    assert "action_center_execution_skipped_already_executed" in event_types
 
 
 def test_rejected_action_cannot_execute() -> None:

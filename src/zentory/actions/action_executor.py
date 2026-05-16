@@ -10,6 +10,7 @@ class ActionExecutor:
     def execute(self, action: ActionRecord) -> ActionRecord:
         action.status = ActionStatus.EXECUTED
         action.payload["mock_execution"] = True
+        action.payload["mock_execution_count"] = action.payload.get("mock_execution_count", 0) + 1
         action.payload["external_api_called"] = False
         self.audit_service.record_sync(
             {

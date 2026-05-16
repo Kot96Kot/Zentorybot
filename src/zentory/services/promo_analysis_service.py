@@ -98,7 +98,7 @@ class PromoAnalysisService:
             title = "Запретить участие: цена ниже обязательных расходов"
             description = "Цена акции ниже себестоимости и обязательных расходов."
         elif breakdown.margin_percent < item.minimum_margin_percent:
-            if item.is_slow_mover and forecast_profit > 0:
+            if item.is_slow_mover and stock_days >= item.promo_duration_days:
                 decision = PromoDecision.ALLOW_WITH_APPROVAL
                 risk = RiskLevel.HIGH
                 title = "Slow mover: разрешить низкую маржу только с approval"
