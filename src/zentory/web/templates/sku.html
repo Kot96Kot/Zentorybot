@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>SKU {{ selected_sku.sku }}</h1>
+<p class="muted">Единая карточка товара: продажи, остатки, реклама, отзывы, конкуренты, риски и действия.</p>
+
+<section class="grid cards">
+  <article class="card">
+    <span class="label">Название</span>
+    <strong>{{ selected_sku.name }}</strong>
+  </article>
+  <article class="card">
+    <span class="label">Артикулы</span>
+    <strong>WB {{ selected_sku.articles.wildberries }}</strong><br>
+    <span>Ozon {{ selected_sku.articles.ozon }}</span><br>
+    <span>YM {{ selected_sku.articles.yandex_market }}</span>
+  </article>
+  <article class="card">
+    <span class="label">Остаток / покрытие</span>
+    <strong>{{ selected_sku.stock.stock_units }} шт. · {{ selected_sku.stock.coverage_days }} дн.</strong>
+  </article>
+  <article class="card">
+    <span class="label">Рейтинг / отзывы</span>
+    <strong>{{ selected_sku.reviews.rating }} · {{ selected_sku.reviews.reviews_count }}</strong>
+  </article>
+</section>
+
+<section class="grid two-columns">
+  <article class="card">
+    <h2>Продажи и экономика</h2>
+    <table>
+      <tbody>
+        <tr><th>Продажи за день</th><td>{{ selected_sku.sales.day_units }}</td></tr>
+        <tr><th>Продажи за неделю</th><td>{{ selected_sku.sales.week_units }}</td></tr>
+        <tr><th>Продажи за месяц</th><td>{{ selected_sku.sales.month_units }}</td></tr>
+        <tr><th>Выручка</th><td>{{ selected_sku.sales.revenue }}</td></tr>
+        <tr><th>Маржа</th><td>{{ selected_sku.sales.margin_percent }}%</td></tr>
+      </tbody>
+    </table>
+  </article>
+
+  <article class="card">
+    <h2>Реклама и воронка</h2>
+    <table>
+      <tbody>
+        <tr><th>ДРР</th><td>{{ selected_sku.advertising.drr_percent }}%</td></tr>
+        <tr><th>CTR</th><td>{{ selected_sku.advertising.ctr_percent }}%</td></tr>
+        <tr><th>Переходы</th><td>{{ selected_sku.advertising.clicks }}</td></tr>
+        <tr><th>Корзины</th><td>{{ selected_sku.advertising.carts }}</td></tr>
+        <tr><th>Заказы</th><td>{{ selected_sku.advertising.orders }}</td></tr>
+        <tr><th>Конверсия в корзину</th><td>{{ selected_sku.advertising.cart_conversion_percent }}%</td></tr>
+        <tr><th>Конверсия в заказ</th><td>{{ selected_sku.advertising.order_conversion_percent }}%</td></tr>
+      </tbody>
+    </table>
+  </article>
+</section>
+
+<section class="grid two-columns">
+  <article class="card">
+    <h2>Поиск и конкурент</h2>
+    <table>
+      <tbody>
+        <tr><th>Позиция в поиске</th><td>#{{ selected_sku.search_position }}</td></tr>
+        <tr><th>Конкурент</th><td>{{ selected_sku.competitor.name }} · {{ selected_sku.competitor.sku }}</td></tr>
+        <tr><th>Цена конкурента</th><td>{{ selected_sku.competitor.price }}</td></tr>
+        <tr><th>Рейтинг конкурента</th><td>{{ selected_sku.competitor.rating }}</td></tr>
+        <tr><th>Позиция конкурента</th><td>#{{ selected_sku.competitor.search_position }}</td></tr>
+      </tbody>
+    </table>
+  </article>
+
+  <article class="card">
+    <h2>Отзывы</h2>
+    <ul>
+      {% for review in selected_sku.reviews.latest_reviews %}
+      <li>{{ review }}</li>
+      {% endfor %}
+    </ul>
+  </article>
+</section>
+
+<section class="grid two-columns">
+  <article class="card">
+    <h2>Сильные и слабые стороны</h2>
+    <h3>Сильные стороны</h3>
+    <ul>{% for item in selected_sku.strengths %}<li>{{ item }}</li>{% endfor %}</ul>
+    <h3>Слабые стороны</h3>
+    <ul>{% for item in selected_sku.weaknesses %}<li>{{ item }}</li>{% endfor %}</ul>
+  </article>
+
+  <article class="card">
+    <h2>Рекомендации и риски</h2>
+    <h3>Рекомендации</h3>
+    <ul>{% for item in selected_sku.recommendations %}<li>{{ item }}</li>{% endfor %}</ul>
+    <h3>Риски</h3>
+    <ul>{% for item in selected_sku.risks %}<li><span class="pill critical">risk</span> {{ item }}</li>{% endfor %}</ul>
+  </article>
+</section>
+
+<section class="card">
+  <h2>Действия на подтверждение</h2>
+  <table>
+    <thead><tr><th>Action ID</th><th>Действие</th><th>Риск</th><th>Approval</th><th>Rollback</th><th>Команда</th></tr></thead>
+    <tbody>
+      {% for action in selected_sku.approval_actions %}
+      <tr>
+        <td><code>{{ action.action_id }}</code></td>
+        <td>{{ action.title }}</td>
+        <td><span class="pill {{ action.risk_level|lower }}">{{ action.risk_level }}</span></td>
+        <td>{{ action.approval_mode }}</td>
+        <td>{{ action.rollback_available }}</td>
+        <td><code>{{ action.command }}</code></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

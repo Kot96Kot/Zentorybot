@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Actions</h1>
+<p class="muted">Proposed actions в mock-режиме. Подтверждение возможно через Telegram/API, реальные изменения не выполняются.</p>
+<section class="card">
+  <table>
+    <thead><tr><th>Action ID</th><th>Действие</th><th>Агент</th><th>Risk</th><th>Approval</th><th>Status</th></tr></thead>
+    <tbody>
+      {% for action in actions %}
+      <tr>
+        <td><code>{{ action.action_id }}</code></td>
+        <td>{{ action.title }}</td>
+        <td>{{ action.agent }}</td>
+        <td><span class="pill {{ action.risk|lower }}">{{ action.risk }}</span></td>
+        <td>{{ action.approval }}</td>
+        <td>{{ action.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
