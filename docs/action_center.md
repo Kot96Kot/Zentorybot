@@ -62,3 +62,19 @@ Each Action Center record contains:
 `ActionExecutor` never calls real marketplace APIs. Execution only changes the in-memory action status and records audit metadata with `mock: true` and `external_api_called: false`.
 
 This means Action Center can be used safely for UX, Telegram, dashboard, and approval-flow development without changing real prices, bids, cards, inventory, or campaigns.
+
+## HTTP API
+
+The Action Center is exposed through mock-safe REST endpoints for dashboard and integration tests:
+
+- `POST /actions` creates a persisted action card.
+- `GET /actions` lists recent cards newest-first.
+- `GET /actions/pending` lists proposed and approved cards still requiring attention.
+- `GET /actions/{action_id}` fetches one card.
+- `GET /actions/{action_id}/preview` renders the explanation, evidence, changed fields and approve/reject buttons.
+- `POST /actions/{action_id}/approve` and `POST /actions/{action_id}/reject` record the owner decision.
+- `POST /actions/{action_id}/execute` performs a mock execution only when approval requirements are satisfied.
+- `POST /actions/{action_id}/rollback` performs a mock rollback only for rollback-capable cards.
+
+The legacy `POST /actions/preview` and `POST /actions/approve` routes remain available for orchestrator proposals stored in `ActionRegistry`.
+

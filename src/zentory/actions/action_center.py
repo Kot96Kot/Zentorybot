@@ -66,8 +66,11 @@ class ActionCenter:
         )
         return action
 
+    def get_action(self, action_id: str) -> ActionRecord:
+        return self.repository.get(action_id)
+
     def preview_action(self, action_id: str) -> ActionPreview:
-        return self.preview_builder.build(self.repository.get(action_id))
+        return self.preview_builder.build(self.get_action(action_id))
 
     def approve_action(self, action_id: str, *, approved_by: str = "mock_user") -> ActionRecord:
         action = self.repository.update_status(action_id, ActionStatus.APPROVED)

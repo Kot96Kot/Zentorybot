@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from zentory.actions.action_center import ActionCenter
 from zentory.actions.registry import ActionRegistry
 from zentory.agents.orchestrator import Orchestrator
 from zentory.integrations.telegram.client import TelegramClient
@@ -39,6 +40,11 @@ def get_action_registry() -> ActionRegistry:
 @lru_cache
 def get_orchestrator() -> Orchestrator:
     return Orchestrator(action_registry=get_action_registry(), audit_service=get_audit_service())
+
+
+@lru_cache
+def get_action_center() -> ActionCenter:
+    return ActionCenter(audit_service=get_audit_service())
 
 
 def get_reports_service() -> ReportsService:

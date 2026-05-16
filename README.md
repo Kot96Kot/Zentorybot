@@ -81,8 +81,17 @@ Telegram -> API Layer -> Orchestrator -> Agents -> Decision Engine -> Actions
 - `GET /health` — healthcheck, возвращает `{"status":"ok"}`.
 - `GET /ready` — readiness check.
 - `POST /telegram/webhook` — mock Telegram webhook и control center.
-- `POST /actions/preview` — preview proposed actions.
-- `POST /actions/approve` — approve action через API.
+- `POST /actions/preview` — preview proposed actions from the orchestrator without execution.
+- `POST /actions/approve` — approve an orchestrator action через API.
+- `POST /actions` — create an Action Center card with risk, evidence, approval and rollback metadata.
+- `GET /actions` — list recent Action Center cards.
+- `GET /actions/pending` — list proposed/approved cards awaiting a decision or execution.
+- `GET /actions/{action_id}` — fetch one Action Center card.
+- `GET /actions/{action_id}/preview` — render an approval preview with changes and Telegram-style buttons.
+- `POST /actions/{action_id}/approve` — approve an Action Center card.
+- `POST /actions/{action_id}/reject` — reject an Action Center card.
+- `POST /actions/{action_id}/execute` — execute a mock-only action when approval rules allow it.
+- `POST /actions/{action_id}/rollback` — roll back a mock-only action when rollback is available.
 - `GET /reports/daily` — mock daily report.
 - `GET /dashboard` — web-панель состояния AI-агентов.
 - `GET /dashboard/alerts` — mock-алерты, требующие внимания.
