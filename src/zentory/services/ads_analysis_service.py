@@ -189,7 +189,7 @@ class AdsAnalysisService:
 
     @staticmethod
     def _stock_days_left(metrics: AdsCampaignMetrics) -> float:
-        daily_sales = max(metrics.orders, 1)
+        daily_sales = max(metrics.orders / 7, 1)
         return metrics.sku_stock / daily_sales
 
     @staticmethod

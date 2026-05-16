@@ -162,32 +162,44 @@ def _context(request: Request, **extra: Any) -> dict[str, Any]:
 @router.get("", response_class=HTMLResponse)
 @router.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("dashboard.html", _context(request, title="Dashboard"))
+    return templates.TemplateResponse(
+        request=request, name="dashboard.html", context=_context(request, title="Dashboard")
+    )
 
 
 @router.get("/alerts", response_class=HTMLResponse)
 async def dashboard_alerts(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("alerts.html", _context(request, title="Alerts"))
+    return templates.TemplateResponse(
+        request=request, name="alerts.html", context=_context(request, title="Alerts")
+    )
 
 
 @router.get("/actions", response_class=HTMLResponse)
 async def dashboard_actions(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("actions.html", _context(request, title="Actions"))
+    return templates.TemplateResponse(
+        request=request, name="actions.html", context=_context(request, title="Actions")
+    )
 
 
 @router.get("/sku/{sku}", response_class=HTMLResponse)
 async def dashboard_sku(request: Request, sku: str) -> HTMLResponse:
     selected = SKUIntelligenceService().build_card(sku)
     return templates.TemplateResponse(
-        "sku.html", _context(request, title=f"SKU {sku}", selected_sku=selected)
+        request=request,
+        name="sku.html",
+        context=_context(request, title=f"SKU {sku}", selected_sku=selected),
     )
 
 
 @router.get("/agents", response_class=HTMLResponse)
 async def dashboard_agents(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("agents.html", _context(request, title="Agents"))
+    return templates.TemplateResponse(
+        request=request, name="agents.html", context=_context(request, title="Agents")
+    )
 
 
 @router.get("/audit", response_class=HTMLResponse)
 async def dashboard_audit(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse("audit.html", _context(request, title="Audit"))
+    return templates.TemplateResponse(
+        request=request, name="audit.html", context=_context(request, title="Audit")
+    )

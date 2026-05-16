@@ -48,7 +48,12 @@ class TelegramFormatter:
         return self.format_help()
 
     def format_help(self) -> str:
-        command_lines = [f"• {spec.name.value} — {spec.description}" for spec in COMMAND_SPECS]
+        command_lines = []
+        for spec in COMMAND_SPECS:
+            command = spec.name.value
+            if spec.argument_name is not None:
+                command = f"{command} <{spec.argument_name}>"
+            command_lines.append(f"• {command} — {spec.description}")
         return self._manager_message(
             status="доступен минимальный Telegram UX",
             problem="лишние команды агентов скрыты",

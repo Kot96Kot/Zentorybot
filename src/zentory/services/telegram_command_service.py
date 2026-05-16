@@ -27,6 +27,14 @@ class TelegramCommandService:
         chat_id = self._extract_chat_id(payload)
 
         if spec is None:
+            payload_event_type = payload.get("event_type")
+            if not command and payload_event_type is not None:
+                return TelegramCommand(
+                    command="event_payload",
+                    event_type=str(payload_event_type),
+                    payload=enriched_payload,
+                    chat_id=chat_id,
+                )
             return TelegramCommand(
                 command=command or "unknown",
                 event_type="control_help",

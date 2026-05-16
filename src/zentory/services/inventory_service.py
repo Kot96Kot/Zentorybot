@@ -114,11 +114,10 @@ class InventoryService:
                 "SKU в рекламе, но остатка меньше 7 дней: отправить alert в AdsAgent."
             )
         if self._sales_growing(item):
-            priority = (
-                InventoryPriority.CRITICAL
-                if priority == InventoryPriority.HIGH
-                else InventoryPriority.HIGH
-            )
+            if priority == InventoryPriority.HIGH:
+                priority = InventoryPriority.CRITICAL
+            elif priority not in {InventoryPriority.CRITICAL, InventoryPriority.HIGH}:
+                priority = InventoryPriority.HIGH
 
         excess_stock = item.coverage_days > item.desired_stock_days * 2
         return InventorySkuReport(

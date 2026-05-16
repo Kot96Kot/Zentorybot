@@ -41,8 +41,10 @@ async def telegram_webhook(
     registry: ActionRegistryDependency,
     rollback_service: RollbackServiceDependency,
 ) -> dict[str, Any]:
+    event_type = str(payload.get("event_type", "unknown"))
     try:
         command = command_service.parse(payload)
+        event_type = command.event_type
         log_action(
             logger,
             "telegram_webhook_received",
@@ -56,6 +58,8 @@ async def telegram_webhook(
             return {
                 "mock": True,
                 "status": "error",
+                "event_type": command.event_type,
+                "proposed_actions": [],
                 "command": command.command,
                 "telegram_messages": [sent],
             }
@@ -83,13 +87,21 @@ async def telegram_webhook(
                 await telegram_client.send_telegram_message(command.chat_id, message["text"])
         return {
             "mock": True,
+            "status": "ok",
+            "event_type": command.event_type,
+            "proposed_actions": [
+                action.model_dump(mode="json") for action in decision.proposed_actions
+            ],
             "command": command.command,
             "event": event,
             "decision": decision.model_dump(mode="json"),
             "telegram_messages": messages,
         }
     except Exception as exc:  # noqa: BLE001 - webhook must not crash the app
-        return handle_internal_error(exc, source="telegram_webhook")
+        error_payload = handle_internal_error(exc, source="telegram_webhook")
+        error_payload["event_type"] = event_type
+        error_payload["proposed_actions"] = []
+        return error_payload
 
 
 async def _handle_approval_command(
@@ -99,7 +111,13 @@ async def _handle_approval_command(
     registry: ActionRegistry,
 ) -> dict[str, Any]:
     if command.action_id is None:
-        return {"mock": True, "status": "error", "detail": "action_id is required"}
+        return {
+            "mock": True,
+            "status": "error",
+            "event_type": command.event_type,
+            "proposed_actions": [],
+            "detail": "action_id is required",
+        }
     try:
         approved = command.event_type == "approve_action"
         action = (
@@ -110,12 +128,16 @@ async def _handle_approval_command(
         return {
             "mock": True,
             "status": "ok",
+            "event_type": command.event_type,
+            "proposed_actions": [],
             "action": action.model_dump(mode="json"),
             "telegram_messages": [sent],
         }
     except ActionNotFoundError as exc:
         payload = handle_internal_error(exc, source="telegram_webhook")
         await telegram_client.send_telegram_message(command.chat_id, payload["detail"])
+        payload["event_type"] = command.event_type
+        payload["proposed_actions"] = []
         return payload
 
 
@@ -130,13 +152,21 @@ async def _handle_rollback_command(
             command.event_type, {"missing_argument": "action_id"}
         )
         sent = await telegram_client.send_telegram_message(command.chat_id, text)
-        return {"mock": True, "status": "error", "telegram_messages": [sent]}
+        return {
+            "mock": True,
+            "status": "error",
+            "event_type": command.event_type,
+            "proposed_actions": [],
+            "telegram_messages": [sent],
+        }
     result = rollback_service.rollback(command.action_id)
     text = formatter.format_rollback_result(result)
     sent = await telegram_client.send_telegram_message(command.chat_id, text)
     return {
         "mock": True,
         "status": result["status"],
+        "event_type": command.event_type,
+        "proposed_actions": [],
         "rollback": result,
         "telegram_messages": [sent],
     }
