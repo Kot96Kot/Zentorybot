@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Audit</h1>
+<p class="muted">Mock audit trail: записи показывают, что агенты и Safety Core делают перед execution.</p>
+<section class="card">
+  <table>
+    <thead><tr><th>Время</th><th>Event</th><th>Actor</th><th>Status</th><th>Detail</th></tr></thead>
+    <tbody>
+      {% for record in audit %}
+      <tr>
+        <td>{{ record.time }}</td>
+        <td>{{ record.event_type }}</td>
+        <td>{{ record.actor }}</td>
+        <td>{{ record.status }}</td>
+        <td>{{ record.detail }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}

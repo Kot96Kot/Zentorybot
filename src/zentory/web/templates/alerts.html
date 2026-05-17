@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Alerts</h1>
+<p class="muted">Показываются только mock-ситуации, требующие внимания менеджера.</p>
+<section class="card">
+  <table>
+    <thead><tr><th>Severity</th><th>Проблема</th><th>Источник</th><th>Причина</th><th>Рекомендация</th></tr></thead>
+    <tbody>
+      {% for alert in alerts %}
+      <tr>
+        <td><span class="pill {{ alert.severity }}">{{ alert.severity }}</span></td>
+        <td>{{ alert.title }}</td>
+        <td>{{ alert.source }}</td>
+        <td>{{ alert.reason }}</td>
+        <td>{{ alert.recommendation }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
