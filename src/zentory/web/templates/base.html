@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} · Zentorybot</title>
+    <link rel="stylesheet" href="/dashboard/static/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <a class="brand" href="/dashboard">Zentorybot</a>
+        <span class="subtitle">AI Agents Dashboard · mock-only</span>
+      </div>
+      <nav class="nav">
+        <a href="/dashboard">Overview</a>
+        <a href="/dashboard/alerts">Alerts</a>
+        <a href="/dashboard/actions">Actions</a>
+        <a href="/dashboard/agents">Agents</a>
+        <a href="/dashboard/audit">Audit</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>
