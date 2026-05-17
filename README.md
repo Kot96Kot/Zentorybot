@@ -33,6 +33,17 @@ Zentorybot — backend-платформа формата **AI operating system**
 - Production persistence для Action Registry/Audit/Idempotency.
 - Background workers в production-режиме.
 
+
+## Platform Algorithm
+
+Zentory работает как операционный контур, а не как «бот с командами»:
+
+```text
+Data → Analysis → Recommendation → Self-check → Approval → Action → Audit → Learning
+```
+
+Платформа видит данные, находит отклонения, объясняет причину, предлагает действие, проверяет расчет, просит подтверждение, фиксирует результат и запоминает эффект. Сейчас рабочими режимами считаются **SHADOW** и **ASSISTANT**; SEMI_AUTO и AUTO описаны как будущие режимы после production safety contracts. Подробнее: `docs/platform_algorithm.md`, `docs/platform_principles.md`, `docs/automation_filter.md`, `docs/action_lifecycle.md`, `docs/safety_modes.md`.
+
 ## Главная архитектурная идея
 
 ```text
