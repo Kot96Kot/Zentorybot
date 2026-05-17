@@ -107,19 +107,11 @@ All calculations pass through `CalculationSelfCheckService`. It checks:
 
 If critical errors are found, `ForecastService.full_report()` marks the recommendation as: `Расчет требует проверки человеком`.
 
-## Telegram commands
+## Telegram UX
 
-The module supports mock Telegram commands:
+Forecast & ABC is an internal analytics module. It should not add manual agent commands to the main Telegram help. A manager uses business commands such as `/daily`, `/alerts`, `/sku <sku>` and `/plan`; the Orchestrator decides when Forecast & ABC data should be included in the response.
 
-- `/abc`
-- `/abc revenue`
-- `/abc profit`
-- `/forecast`
-- `/forecast_sku <sku>`
-- `/stock_forecast`
-- `/seasonality`
-
-`/abc` returns SKU count, revenue context, class summaries, top SKU and self-check warnings. `/forecast_sku <sku>` returns stock, average daily sales, coverage, 30/60/90-day forecast, replenishment quantities, risks, seasonality, trend and self-check status.
+For direct technical access use the HTTP analytics endpoints below.
 
 ## API endpoints
 

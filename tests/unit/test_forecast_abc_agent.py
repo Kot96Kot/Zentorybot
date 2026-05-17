@@ -8,7 +8,6 @@ from zentory.api.routers.analytics import (
     forecast_sku,
     stock_forecast,
 )
-from zentory.integrations.telegram.commands import SUPPORTED_COMMANDS
 from zentory.schemas.abc import ABCMetric
 from zentory.services.forecast_service import ForecastService
 from zentory.services.telegram_command_service import TelegramCommandService
@@ -50,18 +49,13 @@ def test_forecast_service_aggregates_stock_by_warehouse_and_region() -> None:
     assert item.mock is True
 
 
-def test_forecast_telegram_commands_are_supported_and_parse_arguments() -> None:
+def test_forecast_abc_stays_internal_not_manual_telegram_command() -> None:
     command = TelegramCommandService().parse({"text": "/abc profit", "chat_id": "1"})
-    sku_command = TelegramCommandService().parse({"text": "/forecast_sku ZNT-COS-001"})
 
-    assert "/abc" in SUPPORTED_COMMANDS
-    assert "/forecast" in SUPPORTED_COMMANDS
-    assert "/stock_forecast" in SUPPORTED_COMMANDS
-    assert "/seasonality" in SUPPORTED_COMMANDS
-    assert command.event_type == "abc"
-    assert command.payload["metric"] == "profit"
-    assert sku_command.event_type == "forecast_sku"
-    assert sku_command.payload["sku"] == "ZNT-COS-001"
+    assert command.event_type == "control_help"
+    assert command.error == "unsupported_command"
+    assert "/daily" in command.payload["supported_commands"]
+    assert "/abc" not in command.payload["supported_commands"]
 
 
 def test_analytics_endpoints_return_json_serializable_mock_dicts() -> None:

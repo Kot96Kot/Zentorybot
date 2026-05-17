@@ -49,7 +49,6 @@ class TelegramCommandService:
             argument = str(raw_argument) if raw_argument is not None else None
         action_id = argument if spec.argument_name == "action_id" else None
         sku = argument if spec.argument_name == "sku" else None
-        metric = argument if spec.argument_name == "metric" else None
         if spec.requires_argument and argument is None:
             return TelegramCommand(
                 command=command,
@@ -66,8 +65,6 @@ class TelegramCommandService:
             enriched_payload["action_id"] = action_id
         if sku is not None:
             enriched_payload["sku"] = sku
-        if metric is not None:
-            enriched_payload["metric"] = metric
 
         return TelegramCommand(
             command=command,

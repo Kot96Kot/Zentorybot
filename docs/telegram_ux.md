@@ -1,55 +1,106 @@
 # Telegram UX
 
-Zentorybot uses a minimal Telegram control interface. The user never chooses an agent manually: they send a business command, and the Orchestrator selects the mock module that should answer.
+Zentorybot uses Telegram as a **managerial control interface**, not as a menu of technical agents. The user does not choose `AdsAgent`, `InventoryAgent`, `ForecastABCAgent` or any other internal module. The user sends a business command, and the Orchestrator routes it to the right agent or service.
 
-## Commands
+All responses are mock-only in the current MVP. No real Telegram, Wildberries, Ozon or Yandex Market API calls are made.
+
+## Main commands
 
 | Command | Purpose |
 | --- | --- |
 | `/start` | Start the mock control center. |
-| `/help` | Show the minimal command list. |
-| `/daily` | Return yesterday's report and key deviations. |
-| `/alerts` | Return only items that require management attention. |
-| `/sku <sku>` | Build one SKU card with product card, sales, stock, ads, reviews, and recommendations. |
-| `/plan` | Return today's action plan. |
+| `/help` | Show only the managerial command list. |
+| `/daily` | Daily summary: sales, stock, ads, reviews, alerts and recommendations. |
+| `/alerts` | Only what needs attention: critical signals, warnings and pending approvals. |
+| `/sku <sku>` | Unified SKU card: sales, stock, ads, reviews, competitors, forecast and recommendations. |
+| `/plan` | Day plan: what to check, approve, postpone and handle urgently. |
 | `/approve <action_id>` | Approve a proposed action. |
 | `/reject <action_id>` | Reject a proposed action. |
-| `/rollback <action_id>` | Roll back an action if a mock rollback plan exists. |
-| `/status` | Show agent readiness and Safety Core status. |
+| `/rollback <action_id>` | Roll back an action when a mock rollback plan exists. |
+| `/status` | Safety mode, agent status, mock mode and pending actions count. |
+
+Manual commands for individual agents must not be shown in the main help. Forecast, ads, promo and inventory modules stay internal and are selected by Orchestrator.
 
 ## Message format
 
-Telegram messages are short and managerial. Each command response uses the same structure:
+Every Telegram response should use the same managerial card shape:
 
 1. **Статус** — what happened now.
 2. **Проблема** — what needs attention.
 3. **Причина** — why it happened.
 4. **Рекомендация** — what the manager should do next.
 5. **Риск** — `LOW`, `MEDIUM`, `HIGH`, or `CRITICAL`.
-6. **Кнопки** — mock action commands such as `/plan`, `/alerts`, `/approve <action_id>`, `/reject <action_id>`.
+6. **Нужно подтверждение** — whether the next action needs approval.
+
+Optional mock buttons can point to the next managerial command, for example `/plan`, `/alerts`, `/sku <sku>`, `/approve <action_id>` or `/reject <action_id>`.
+
+## Command logic
+
+### `/daily`
+
+Returns a business summary with:
+
+- sales;
+- stock;
+- ads;
+- reviews;
+- alerts;
+- recommendations.
+
+### `/alerts`
+
+Returns only what requires attention:
+
+- critical issues;
+- warnings;
+- pending approvals.
+
+### `/sku <sku>`
+
+Returns one SKU card with:
+
+- sales;
+- stock;
+- ads;
+- reviews;
+- competitors;
+- forecast;
+- recommendations.
+
+### `/plan`
+
+Returns the day plan:
+
+- what to check;
+- what to approve;
+- what to postpone;
+- what is urgent.
+
+### `/status`
+
+Returns:
+
+- safety mode;
+- agent readiness;
+- mock mode;
+- pending actions count.
+
+## Orchestrator routing
+
+Telegram maps text to business event types only:
+
+- `/daily` -> `daily`;
+- `/alerts` -> `alerts`;
+- `/sku <sku>` -> `sku_overview`;
+- `/plan` -> `plan`;
+- `/status` -> `control_status`.
+
+The Orchestrator owns module selection and returns a mock managerial card.
 
 ## Mock behavior
 
 - No real Telegram API is called.
 - No real marketplace API is called.
-- No real prices, bids, stock, or product cards are changed.
-- Approval, rejection, rollback, and cards are represented by mock in-memory services.
-- Safety Core remains the execution guard for proposed actions.
-
-## Orchestrator routing
-
-The Telegram layer maps commands to business event types only. The Orchestrator owns routing:
-
-- `/daily` -> daily business summary.
-- `/alerts` -> urgent cross-module alerts.
-- `/sku <sku>` -> SKU overview with card, sales, stock, ads, reviews, and recommendations.
-- `/plan` -> today's management plan.
-- `/status` -> agent and Safety Core status.
-
-This keeps Telegram simple while preserving a modular backend.
-
-## MVP demo verification (2026-05-16)
-
-The command list above matches `TelegramCommandService` and the public mock webhook route `POST /telegram/webhook`. In MVP demo mode the Telegram client does not call Telegram Bot API; it returns mock message payloads with `status: not_sent`.
-
-Do not enable real Telegram sends until webhook secrets, tenant/user mapping, command permissions and approval ownership checks are implemented.
+- No real prices, bids, stock or product cards are changed.
+- Approval, rejection, rollback and cards are represented by mock in-memory services.
+- Safety Core remains the guard for proposed actions.

@@ -48,6 +48,14 @@ def test_telegram_command_service_maps_minimal_commands(text: str, event_type: s
     assert command.event_type == event_type
 
 
+def test_manual_agent_commands_are_hidden_from_command_service() -> None:
+    command = TelegramCommandService().parse({"text": "/forecast_sku ZNT-WB-001"})
+
+    assert command.event_type == "control_help"
+    assert command.error == "unsupported_command"
+    assert "/forecast_sku" not in command.payload["supported_commands"]
+
+
 def test_telegram_webhook_returns_managerial_sku_message() -> None:
     client = TestClient(create_app())
 
@@ -61,6 +69,7 @@ def test_telegram_webhook_returns_managerial_sku_message() -> None:
     assert "Статус:" in text
     assert "Проблема:" in text
     assert "Рекомендация:" in text
+    assert "Нужно подтверждение:" in text
 
 
 def test_telegram_webhook_approve_command_uses_action_registry() -> None:

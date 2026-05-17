@@ -28,6 +28,7 @@ class TelegramFormatter:
                 reason="Orchestrator сам маршрутизирует команды в нужный модуль",
                 recommendation="используйте /daily, /alerts, /sku <sku>, /plan или /status",
                 risk="LOW",
+                approval="нет",
             )
         if event_type == "control_status":
             return self._manager_message(
@@ -36,6 +37,7 @@ class TelegramFormatter:
                 reason="система работает в безопасном mock-режиме",
                 recommendation="проверяйте proposed actions через /approve или /reject",
                 risk="LOW",
+                approval="нет; pending actions: mock 0",
             )
         if payload.get("missing_argument"):
             return self._manager_message(
@@ -44,6 +46,7 @@ class TelegramFormatter:
                 reason="команда требует идентификатор",
                 recommendation="пример: /sku WB-MOCK-1 или /approve action_id",
                 risk="LOW",
+                approval="нет",
             )
         return self.format_help()
 
@@ -60,6 +63,7 @@ class TelegramFormatter:
             reason="пользователь пишет бизнес-команду, Orchestrator выбирает модуль",
             recommendation="\n".join(command_lines),
             risk="LOW",
+            approval="нет",
         )
 
     def format_decision(self, decision: DecisionResult) -> str:
@@ -74,6 +78,7 @@ class TelegramFormatter:
             reason="mock-модули не нашли задач для команды",
             recommendation="запросите /daily, /alerts, /sku <sku> или /plan",
             risk=str(decision.risk_level),
+            approval="нет",
         )
 
     def format_manager_card(self, card: dict[str, Any]) -> str:
@@ -89,6 +94,7 @@ class TelegramFormatter:
             f"Причина: {card.get('reason', 'mock-анализ')}",
             f"Рекомендация: {card.get('recommendation', 'наблюдать')}",
             f"Риск: {card.get('risk', 'LOW')}",
+            f"Нужно подтверждение: {card.get('approval_required', 'нет')}",
         ]
         if button_text:
             lines.append(f"Кнопки: {button_text}")
@@ -102,6 +108,7 @@ class TelegramFormatter:
             reason=action.description,
             recommendation=f"подтвердить или отклонить action_id={action.action_id}",
             risk=str(action.risk_level),
+            approval="да",
         )
         return {
             "text": text,
@@ -119,6 +126,7 @@ class TelegramFormatter:
             reason="решение получено из Telegram-команды",
             recommendation="следите за /status и /alerts",
             risk=str(action.risk_level),
+            approval="да",
         )
 
     def format_rollback_result(self, result: dict[str, Any]) -> str:
@@ -128,6 +136,7 @@ class TelegramFormatter:
             reason=str(result.get("reason", "mock rollback service")),
             recommendation=str(result.get("recommendation", "проверьте action_id")),
             risk=str(result.get("risk", "MEDIUM")),
+            approval="нет",
         )
 
     def format_messages(self, decision: DecisionResult) -> list[dict[str, Any]]:
@@ -141,12 +150,19 @@ class TelegramFormatter:
 
     @staticmethod
     def _manager_message(
-        *, status: str, problem: str, reason: str, recommendation: str, risk: str
+        *,
+        status: str,
+        problem: str,
+        reason: str,
+        recommendation: str,
+        risk: str,
+        approval: str = "нет",
     ) -> str:
         return (
             f"Статус: {status}\n"
             f"Проблема: {problem}\n"
             f"Причина: {reason}\n"
             f"Рекомендация: {recommendation}\n"
-            f"Риск: {risk}"
+            f"Риск: {risk}\n"
+            f"Нужно подтверждение: {approval}"
         )

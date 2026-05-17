@@ -25,7 +25,7 @@ from zentory.services.audit_service import AuditService
 
 class Orchestrator:
     CONTROL_EVENTS = {"control_start", "control_help", "control_status"}
-    TELEGRAM_UX_EVENTS = {"daily", "alerts", "plan"}
+    TELEGRAM_UX_EVENTS = {"daily", "alerts", "sku_overview", "plan"}
     EVENT_ALIASES = {
         "daily": "analytics",
         "alerts": "ads_alerts",
@@ -123,11 +123,12 @@ class Orchestrator:
                 "risk": "LOW",
             },
             "control_status": {
-                "status": "все mock-агенты готовы; Safety Core активен",
-                "problem": "реальные API отключены",
-                "reason": "safe-mode защищает от изменения цен, ставок и карточек",
+                "status": "SHADOW/ASSISTANT; Safety Core активен",
+                "problem": "реальные API отключены; pending actions: mock 0",
+                "reason": "mock mode включен, агенты готовы, safe-mode защищает от write-действий",
                 "recommendation": "смотрите /alerts и подтверждайте действия через /approve",
                 "risk": "LOW",
+                "approval_required": "нет",
             },
         }
         return [
@@ -141,48 +142,81 @@ class Orchestrator:
         sku = str(payload.get("sku", "WB-MOCK-1"))
         cards = {
             "daily": {
-                "status": "отчет за вчера готов",
-                "problem": "выручка -8%, реклама ACOS +4 п.п., остаток SKU WB-MOCK-1 на 5 дней",
-                "reason": "просели заказы после роста ставки и снижения органики",
-                "recommendation": "снизить ставку по убыточной кампании и пополнить WB-MOCK-1",
+                "status": "сводка дня готова",
+                "problem": (
+                    "продажи -8%; остатки WB-MOCK-1 на 5 дней; реклама ACOS +4 п.п.; "
+                    "отзывы: рейтинг 4.4; алерты: 2; рекомендации: 3"
+                ),
+                "reason": (
+                    "просели заказы после роста ставки, снижения органики "
+                    "и ограничения складского остатка"
+                ),
+                "recommendation": (
+                    "проверить продажи, остатки, рекламу и отзывы; перейти в /alerts или /plan"
+                ),
                 "risk": "MEDIUM",
+                "approval_required": "нет; есть pending approvals в /alerts",
                 "buttons": [
                     {"text": "План", "command": "/plan"},
                     {"text": "SKU", "command": "/sku WB-MOCK-1"},
                 ],
             },
             "alerts": {
-                "status": "найдено 2 срочных сигнала",
-                "problem": "WB-MOCK-1 закончится через 5 дней; кампания ADS-7 выше ACOS-лимита",
+                "status": "найдены critical/warning сигналы",
+                "problem": (
+                    "critical: WB-MOCK-1 закончится через 5 дней; warning: ADS-7 выше ACOS-лимита; "
+                    "pending approvals: 1"
+                ),
                 "reason": "остатки ниже safety-порога, рекламная ставка выросла быстрее продаж",
-                "recommendation": "не усиливать рекламу до пополнения; проверить bid action",
+                "recommendation": (
+                    "не усиливать рекламу до пополнения; "
+                    "подтвердить или отклонить pending action"
+                ),
                 "risk": "HIGH",
+                "approval_required": "да, для pending action",
                 "buttons": [
                     {"text": "SKU", "command": "/sku WB-MOCK-1"},
                     {"text": "План", "command": "/plan"},
                 ],
             },
             "sku_overview": {
-                "status": f"SKU {sku}: карточка собрана",
-                "problem": "остатка на 5 дней, CTR 1.8%, рейтинг 4.4, продажи -6%",
-                "reason": "низкий запас ограничивает рекламу; отзывы про размер снижают конверсию",
+                "status": f"SKU {sku}: единая карточка собрана",
+                "problem": (
+                    "продажи -6%; остатки на 5 дней; реклама CTR 1.8%; отзывы рейтинг 4.4; "
+                    "конкуренты дешевле на 7%; прогноз: риск stockout"
+                ),
+                "reason": (
+                    "низкий запас ограничивает продажи и рекламу; "
+                    "отзывы про размер снижают конверсию"
+                ),
                 "recommendation": (
-                    "пополнить склад, не повышать ставки, обновить блок размеров в карточке"
+                    "пополнить склад, не повышать ставки до поставки, "
+                    "обновить блок размеров в карточке"
                 ),
                 "risk": "HIGH",
+                "approval_required": "да, если создавать действие на пополнение или контент",
                 "buttons": [
                     {"text": "План", "command": "/plan"},
                     {"text": "Alerts", "command": "/alerts"},
                 ],
             },
             "plan": {
-                "status": "план на сегодня готов",
-                "problem": "3 задачи требуют управленческого решения",
-                "reason": "приоритеты рассчитаны по риску денег, остатков и рекламы",
+                "status": "план действий на день готов",
+                "problem": (
+                    "горит stockout WB-MOCK-1; нужно подтвердить ADS-7; "
+                    "отложить низкий promo"
+                ),
+                "reason": (
+                    "приоритеты рассчитаны по риску денег, остатков, "
+                    "рекламы и pending approvals"
+                ),
                 "recommendation": (
-                    "1) пополнить WB-MOCK-1; 2) снизить ADS-7; 3) обновить SKU-контент"
+                    "проверить остатки; подтвердить безопасные действия; "
+                    "отложить низкомаржинальную акцию; "
+                    "срочно разобрать critical alerts"
                 ),
                 "risk": "MEDIUM",
+                "approval_required": "да, для действий из плана",
                 "buttons": [
                     {"text": "Alerts", "command": "/alerts"},
                     {"text": "Status", "command": "/status"},
@@ -199,6 +233,7 @@ class Orchestrator:
     def _telegram_action(
         event_type: str, card: dict[str, Any], event: dict[str, Any], *, title: str
     ) -> Action:
+        risk_level = RiskLevel(card.get("risk", RiskLevel.LOW))
         return Action(
             action_type=event_type,
             title=title,
@@ -206,5 +241,5 @@ class Orchestrator:
                 "Mock Telegram UX response. Orchestrator selected the module automatically."
             ),
             payload={"mock": True, "source_event": event, "telegram_response": card},
-            risk_level=RiskLevel.LOW,
+            risk_level=risk_level,
         )

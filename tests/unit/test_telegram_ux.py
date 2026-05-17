@@ -1,3 +1,5 @@
+import asyncio
+
 import pytest
 
 from zentory.agents.orchestrator import Orchestrator
@@ -32,6 +34,17 @@ def test_minimal_commands_are_parsed(text: str, event_type: str) -> None:
     assert command.chat_id == "manager"
 
 
+def test_manual_agent_commands_are_not_supported() -> None:
+    assert "/abc" not in SUPPORTED_COMMANDS
+    assert "/forecast" not in SUPPORTED_COMMANDS
+    assert "/stock_forecast" not in SUPPORTED_COMMANDS
+
+    command = TelegramCommandService().parse({"text": "/abc profit"})
+
+    assert command.event_type == "control_help"
+    assert command.error == "unsupported_command"
+
+
 def test_sku_command_extracts_sku_without_agent_choice() -> None:
     service = TelegramCommandService()
 
@@ -42,12 +55,13 @@ def test_sku_command_extracts_sku_without_agent_choice() -> None:
     assert command.payload["sku"] == "WB-123"
 
 
-@pytest.mark.asyncio
-async def test_orchestrator_returns_daily_manager_card() -> None:
+def test_orchestrator_returns_daily_manager_card() -> None:
     orchestrator = Orchestrator()
     formatter = TelegramFormatter()
 
-    decision = await orchestrator.handle_event({"event_type": "daily", "payload": {}, "mock": True})
+    decision = asyncio.run(
+        orchestrator.handle_event({"event_type": "daily", "payload": {}, "mock": True})
+    )
     text = formatter.format_decision(decision)
 
     assert "Статус:" in text
@@ -55,23 +69,70 @@ async def test_orchestrator_returns_daily_manager_card() -> None:
     assert "Причина:" in text
     assert "Рекомендация:" in text
     assert "Риск:" in text
-    assert "отчет за вчера" in text
+    assert "Нужно подтверждение:" in text
+    assert "продажи" in text
+    assert "остатки" in text
+    assert "реклама" in text
+    assert "отзывы" in text
+    assert "алерты" in text
 
 
-@pytest.mark.asyncio
-async def test_orchestrator_returns_sku_overview_card() -> None:
+def test_orchestrator_returns_alerts_manager_card() -> None:
     orchestrator = Orchestrator()
     formatter = TelegramFormatter()
 
-    decision = await orchestrator.handle_event(
-        {"event_type": "sku_overview", "payload": {"sku": "WB-777"}, "mock": True}
+    decision = asyncio.run(
+        orchestrator.handle_event({"event_type": "alerts", "payload": {}, "mock": True})
+    )
+    text = formatter.format_decision(decision)
+
+    assert "critical" in text
+    assert "warning" in text
+    assert "pending approvals" in text
+    assert "Нужно подтверждение:" in text
+
+
+def test_orchestrator_returns_sku_overview_card() -> None:
+    orchestrator = Orchestrator()
+    formatter = TelegramFormatter()
+
+    decision = asyncio.run(
+        orchestrator.handle_event(
+            {"event_type": "sku_overview", "payload": {"sku": "WB-777"}, "mock": True}
+        )
     )
     text = formatter.format_decision(decision)
 
     assert "SKU WB-777" in text
+    assert "продажи" in text
     assert "остат" in text
     assert "реклама" in text
     assert "отзывы" in text
+    assert "конкуренты" in text
+    assert "прогноз" in text
+
+
+def test_orchestrator_returns_plan_and_status_cards() -> None:
+    orchestrator = Orchestrator()
+    formatter = TelegramFormatter()
+
+    plan = asyncio.run(
+        orchestrator.handle_event({"event_type": "plan", "payload": {}, "mock": True})
+    )
+    status = asyncio.run(
+        orchestrator.handle_event({"event_type": "control_status", "payload": {}, "mock": True})
+    )
+
+    plan_text = formatter.format_decision(plan)
+    status_text = formatter.format_decision(status)
+
+    assert "проверить" in plan_text
+    assert "подтвердить" in plan_text
+    assert "отложить" in plan_text
+    assert "горит" in plan_text
+    assert "Safety" in status_text
+    assert "mock" in status_text
+    assert "pending actions" in status_text
 
 
 def test_formatter_help_hides_manual_agent_commands() -> None:
@@ -80,6 +141,8 @@ def test_formatter_help_hides_manual_agent_commands() -> None:
     assert "/daily" in text
     assert "/sku <sku>" in text
     assert "/approve" in text
+    assert "/abc" not in text
+    assert "/forecast" not in text
     assert "/agents" not in text
     assert "/ads_today" not in text
 
