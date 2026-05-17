@@ -2,6 +2,8 @@ from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
+from zentory.schemas.marketplace import SourceStampedModel
+
 
 class AdsReportStatus(StrEnum):
     OK = "ok"
@@ -81,3 +83,16 @@ class AdsCampaignReport(BaseModel):
     recommendations: list[AdsRecommendation] = Field(default_factory=list)
     alerts: list[str] = Field(default_factory=list)
     mock: bool = True
+
+
+class AdsSnapshot(SourceStampedModel):
+    impressions: int = 0
+    clicks: int = 0
+    ctr: float = 0
+    spend: float = 0
+    orders: int = 0
+    revenue: float = 0
+    drr: float = 0
+    cpm: float | None = None
+    cpc: float | None = None
+    campaign_id: str | None = None

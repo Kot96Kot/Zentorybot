@@ -12,6 +12,7 @@ from zentory.schemas.ads import (
     AdsRecommendation,
     AdsRecommendationType,
     AdsReportStatus,
+    AdsSnapshot,
 )
 from zentory.schemas.content import ContentBrief, ContentCardDraft, ContentDraftStatus
 from zentory.schemas.forecast import (
@@ -33,6 +34,7 @@ from zentory.schemas.inventory import (
     ReplenishmentRecommendation,
     WarehouseStock,
 )
+from zentory.schemas.marketplace import DataSourceLabel, MarketplaceAccount
 from zentory.schemas.promo import (
     PromoAnalysisReport,
     PromoDecision,
@@ -41,8 +43,11 @@ from zentory.schemas.promo import (
     PromoSummary,
     UnitProfitBreakdown,
 )
+from zentory.schemas.reviews import ReviewSnapshot as UnifiedReviewSnapshot
+from zentory.schemas.sales import SalesSnapshot as UnifiedSalesSnapshot
 from zentory.schemas.sales_plan import SalesPlanInput, SalesPlanReport, SalesPlanStatus
 from zentory.schemas.seasonality import SeasonalityResult
+from zentory.schemas.sku import SKUIdentity
 from zentory.schemas.sku_intelligence import (
     AdvertisingSnapshot,
     ApprovalAction,
@@ -53,8 +58,18 @@ from zentory.schemas.sku_intelligence import (
     SKUIntelligenceCard,
     StockSnapshot,
 )
+from zentory.schemas.stocks import StockSnapshot as UnifiedStockSnapshot
+from zentory.schemas.unit_economics import UnitEconomicsSnapshot
 
 __all__ = [
+    "UnitEconomicsSnapshot",
+    "UnifiedReviewSnapshot",
+    "AdsSnapshot",
+    "UnifiedStockSnapshot",
+    "UnifiedSalesSnapshot",
+    "SKUIdentity",
+    "MarketplaceAccount",
+    "DataSourceLabel",
     "SeasonalityResult",
     "StockStatus",
     "StockForecastReport",
