@@ -11,6 +11,7 @@ from zentory.agents import (
     FeedbackAgent,
     InventoryAgent,
     LaunchAgent,
+    PlatformModulesAgent,
     PromoAgent,
     SalesPlanAgent,
     SKUAgent,
@@ -52,6 +53,7 @@ class Orchestrator:
             AnalyticsAgent(),
             CategoryAgent(),
             SKUAgent(),
+            PlatformModulesAgent(),
         ]
         self.decision_engine = decision_engine or DecisionEngine()
         self.action_registry = action_registry or ActionRegistry()

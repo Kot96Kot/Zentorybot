@@ -2,7 +2,13 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-from zentory.api.routers import actions_router, health_router, reports_router, telegram_router
+from zentory.api.routers import (
+    actions_router,
+    health_router,
+    platform_router,
+    reports_router,
+    telegram_router,
+)
 from zentory.app.lifespan import lifespan
 from zentory.core.errors import ZentoryError, handle_internal_error
 from zentory.web.routes import STATIC_DIR
@@ -20,6 +26,7 @@ def create_app() -> FastAPI:
     app.include_router(telegram_router)
     app.include_router(actions_router)
     app.include_router(reports_router)
+    app.include_router(platform_router)
     app.include_router(dashboard_router)
     app.mount(
         "/dashboard/static",

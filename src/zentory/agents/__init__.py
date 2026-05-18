@@ -6,6 +6,7 @@ from zentory.agents.content_agent import ContentAgent
 from zentory.agents.feedback_agent import FeedbackAgent
 from zentory.agents.inventory_agent import InventoryAgent
 from zentory.agents.launch_agent import LaunchAgent
+from zentory.agents.platform_modules_agent import PlatformModulesAgent
 from zentory.agents.promo_agent import PromoAgent
 from zentory.agents.sales_plan_agent import SalesPlanAgent
 from zentory.agents.sku_agent import SKUAgent
@@ -20,6 +21,7 @@ __all__ = [
     "FeedbackAgent",
     "InventoryAgent",
     "LaunchAgent",
+    "PlatformModulesAgent",
     "PromoAgent",
     "SalesPlanAgent",
     "SKUAgent",
