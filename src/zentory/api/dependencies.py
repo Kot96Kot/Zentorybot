@@ -7,6 +7,7 @@ from zentory.integrations.telegram.client import TelegramClient
 from zentory.integrations.telegram.formatter import TelegramFormatter
 from zentory.services.audit_service import AuditService
 from zentory.services.idempotency import IdempotencyStore
+from zentory.services.platform_modules_service import PlatformModulesService
 from zentory.services.reports_service import ReportsService
 from zentory.services.rollback_service import RollbackService
 from zentory.services.safe_mode import SafeModeService
@@ -49,6 +50,10 @@ def get_action_center() -> ActionCenter:
 
 def get_reports_service() -> ReportsService:
     return ReportsService()
+
+
+def get_platform_modules_service() -> PlatformModulesService:
+    return PlatformModulesService()
 
 
 @lru_cache
