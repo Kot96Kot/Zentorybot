@@ -19,9 +19,6 @@ async def test_typical_question_can_create_draft() -> None:
 
 
 @pytest.mark.asyncio
-@pytest.mark.xfail(
-    strict=True, reason="FeedbackAgent does not classify negative reviews as approval-gated"
-)
 async def test_negative_review_requires_approval() -> None:
     actions = await FeedbackAgent().propose_actions(
         {
@@ -30,13 +27,14 @@ async def test_negative_review_requires_approval() -> None:
         }
     )
 
-    assert actions[0].approval_mode != ApprovalMode.NONE
+    action = actions[0]
+
+    assert action.approval_mode != ApprovalMode.NONE
+    assert action.payload["mock"] is True
+    assert action.payload.get("approval_reason") == "negative_review"
 
 
 @pytest.mark.asyncio
-@pytest.mark.xfail(
-    strict=True, reason="FeedbackAgent does not escalate complaint/warranty/return/legal risk"
-)
 async def test_complaint_warranty_return_or_legal_risk_requires_hard_approval() -> None:
     actions = await FeedbackAgent().propose_actions(
         {
@@ -50,13 +48,14 @@ async def test_complaint_warranty_return_or_legal_risk_requires_hard_approval() 
         }
     )
 
-    assert actions[0].approval_mode == ApprovalMode.HARD_APPROVAL
+    action = actions[0]
+
+    assert action.approval_mode == ApprovalMode.HARD_APPROVAL
+    assert action.payload["mock"] is True
+    assert action.payload.get("approval_reason") == "high_risk_feedback"
 
 
 @pytest.mark.asyncio
-@pytest.mark.xfail(
-    strict=True, reason="There is no knowledge-base grounding guard for feedback replies"
-)
 async def test_bot_does_not_promise_facts_missing_from_knowledge_base() -> None:
     actions = await FeedbackAgent().propose_actions(
         {
@@ -69,5 +68,9 @@ async def test_bot_does_not_promise_facts_missing_from_knowledge_base() -> None:
         }
     )
 
-    assert "пожизн" not in actions[0].description.lower()
-    assert actions[0].payload.get("grounded_in_knowledge_base") is True
+    action = actions[0]
+
+    assert "пожизн" not in action.description.lower()
+    assert "пожизн" not in str(action.payload.get("reply_text", "")).lower()
+    assert action.payload.get("grounded_in_knowledge_base") is True
+    assert action.payload.get("knowledge_base_answer") == "12 months"
