@@ -79,16 +79,14 @@ Telegram -> API Layer -> Orchestrator -> Agents -> Decision Engine -> Actions
 
 ## Telegram Control Center
 
-Поддерживаемый минимальный набор MVP-команд:
+Поддерживаемый управленческий набор MVP-команд:
 
 - `/start`, `/help`
-- `/daily`, `/alerts`, `/plan`, `/status`
-- `/sku <sku>`, `/content_sku <sku>`, `/unit <sku>`, `/learning <sku>`
-- `/abc`, `/forecast`, `/forecast_sku <sku>`, `/stock_risks`, `/replenishment`, `/warehouses`
-- `/ctr_test`, `/content_brief`, `/finance_check`, `/pnl_check`, `/action_result <action_id>`
+- `/daily`, `/alerts`, `/sku <sku>`, `/plan`, `/status`
 - `/approve <action_id>`, `/reject <action_id>`, `/rollback <action_id>`
+- `/abc`, `/forecast`, `/stock_risks`, `/content_sku <sku>`, `/finance_check`
 
-Пользователь не выбирает агента вручную: Orchestrator сам выбирает нужный mock-модуль. Telegram webhook работает в mock mode: реальные сообщения не отправляются, а `TelegramClient` возвращает `mock: true`.
+Пользователь не выбирает агента вручную: Orchestrator сам выбирает нужный mock-модуль. `/help` не показывает ручные команды всех внутренних агентов. Telegram webhook работает в mock mode: реальные сообщения не отправляются, а `TelegramClient` возвращает `mock: true`.
 
 ## HTTP Endpoints
 

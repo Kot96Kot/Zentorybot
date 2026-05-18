@@ -119,15 +119,13 @@ class Orchestrator:
                 "risk": "LOW",
             },
             "control_help": {
-                "status": "доступны 10 команд",
+                "status": "доступны управленческие команды",
                 "problem": "старые команды отдельных агентов скрыты",
                 "reason": "интерфейс должен быть управленческим, а не техническим",
                 "recommendation": (
-                    "/start /help /daily /alerts /sku <sku> /abc /forecast "
-                    "/forecast_sku <sku> /stock_risks /replenishment /warehouses "
-                    "/content_sku <sku> /ctr_test /finance_check /pnl_check /unit <sku> /plan "
-                    "/approve <id> /reject <id> "
-                    "/rollback <id> /status"
+                    "/start /help /daily /alerts /sku <sku> /plan "
+                    "/approve <id> /reject <id> /rollback <id> /status "
+                    "/abc /forecast /stock_risks /content_sku <sku> /finance_check"
                 ),
                 "risk": "LOW",
             },

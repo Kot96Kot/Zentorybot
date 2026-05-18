@@ -18,8 +18,13 @@ All responses are mock-only in the current MVP. No real Telegram, Wildberries, O
 | `/reject <action_id>` | Reject a proposed action. |
 | `/rollback <action_id>` | Roll back an action when a mock rollback plan exists. |
 | `/status` | Safety mode, agent status, mock mode and pending actions count. |
+| `/abc` | ABC analysis by the selected metric. |
+| `/forecast` | Sales and stock forecast summary. |
+| `/stock_risks` | Stockout and supply risk overview. |
+| `/content_sku <sku>` | Content/CTR recommendations for one SKU. |
+| `/finance_check` | Mock finance calculation and anomaly check. |
 
-Manual commands for individual agents must not be shown in the main help. Forecast, ads, promo and inventory modules stay internal and are selected by Orchestrator.
+Manual commands for individual agents must not be shown in the main help. The visible help stays limited to these managerial commands; lower-level aliases can exist for tests or demos but remain hidden from the main UX.
 
 ## Message format
 
@@ -93,7 +98,12 @@ Telegram maps text to business event types only:
 - `/alerts` -> `alerts`;
 - `/sku <sku>` -> `sku_overview`;
 - `/plan` -> `plan`;
-- `/status` -> `control_status`.
+- `/status` -> `control_status`;
+- `/abc` -> `abc`;
+- `/forecast` -> `forecast`;
+- `/stock_risks` -> `stock_risks`;
+- `/content_sku <sku>` -> `content_sku`;
+- `/finance_check` -> `finance_check`.
 
 The Orchestrator owns module selection and returns a mock managerial card.
 

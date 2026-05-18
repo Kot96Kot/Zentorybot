@@ -51,7 +51,7 @@ Read-only WB API is the recommended next integration step, but it must start in 
 - `/content_sku <sku>`
 - `/finance_check`
 
-Additional demo commands are also available: `/start`, `/help`, `/forecast_sku <sku>`, `/replenishment`, `/warehouses`, `/ctr_test`, `/content_brief`, `/pnl_check`, `/unit <sku>`, `/action_result <action_id>`, `/learning <sku>`.
+`/start` and `/help` are also available for control-center onboarding. Lower-level demo aliases stay hidden from `/help` so the operator sees only managerial commands rather than manual commands for every internal agent.
 
 ## Required API endpoints
 

@@ -3,7 +3,25 @@ from typing import Any
 from zentory.actions.schemas import Action
 from zentory.core.enums import ApprovalMode
 from zentory.decision.engine import DecisionResult
-from zentory.integrations.telegram.commands import COMMAND_SPECS
+from zentory.integrations.telegram.commands import COMMANDS_BY_NAME
+
+HELP_COMMAND_NAMES = (
+    "/start",
+    "/help",
+    "/daily",
+    "/alerts",
+    "/sku",
+    "/plan",
+    "/approve",
+    "/reject",
+    "/rollback",
+    "/status",
+    "/abc",
+    "/forecast",
+    "/stock_risks",
+    "/content_sku",
+    "/finance_check",
+)
 
 
 def format_daily_digest(report: dict) -> str:
@@ -27,9 +45,9 @@ class TelegramFormatter:
                 problem="ручной выбор агентов не нужен",
                 reason="Orchestrator сам маршрутизирует команды в нужный модуль",
                 recommendation=(
-                    "используйте /daily, /alerts, /sku <sku>, /abc, "
-                    "/forecast, /stock_risks, /replenishment, "
-                    "/content_sku <sku>, /ctr_test, /finance_check или /status"
+                    "используйте /daily, /alerts, /sku <sku>, /plan, /abc, "
+                    "/forecast, /stock_risks, /content_sku <sku>, "
+                    "/finance_check или /status"
                 ),
                 risk="LOW",
                 approval="нет",
@@ -56,7 +74,8 @@ class TelegramFormatter:
 
     def format_help(self) -> str:
         command_lines = []
-        for spec in COMMAND_SPECS:
+        for command_name in HELP_COMMAND_NAMES:
+            spec = COMMANDS_BY_NAME[command_name]
             command = spec.name.value
             if spec.argument_name is not None:
                 command = f"{command} <{spec.argument_name}>"
@@ -81,8 +100,8 @@ class TelegramFormatter:
             problem="нет предложенных действий",
             reason="mock-модули не нашли задач для команды",
             recommendation=(
-                "запросите /daily, /alerts, /sku <sku>, /abc, /forecast, "
-                "/stock_risks, /replenishment, /content_sku <sku>, /finance_check или /plan"
+                "запросите /daily, /alerts, /sku <sku>, /plan, /abc, /forecast, "
+                "/stock_risks, /content_sku <sku> или /finance_check"
             ),
             risk=str(decision.risk_level),
             approval="нет",
@@ -145,7 +164,6 @@ class TelegramFormatter:
             risk=str(result.get("risk", "MEDIUM")),
             approval="нет",
         )
-
 
     def format_learning_action_result(self, result: dict[str, Any] | None) -> str:
         if result is None:
