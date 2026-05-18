@@ -110,3 +110,15 @@ Latest local verification:
 ## Demo operator rule
 
 If a step would mutate marketplace state, send a Telegram message, publish content, change price, change ad spend or join promo in a real account — **do not run it in MVP demo**.
+
+## PR #3 merge integrity checklist
+
+This branch keeps the useful PR #3 layer on top of the current mock-first base:
+
+- Forecast & ABC modules and API routes are present.
+- Supply & Localization Planner modules and API routes are present.
+- Content CTR Factory modules and content routes are present.
+- Finance Checker modules and finance routes are present.
+- Learning Loop modules and learning routes are present.
+- Data contracts, SKU Intelligence, dashboard, Telegram UX and Action Center safety docs are present.
+- `tests/unit/test_pr3_merge_integrity.py` guards the required file list, required management commands and absence of merge conflict markers.
